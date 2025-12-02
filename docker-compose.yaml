@@ -1,0 +1,70 @@
+services:
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    restart: on-failure
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot/certs/letsencrypt:/etc/nginx/certs
+    networks:
+      - backend-net
+      - db-net
+
+  incident-manager:
+    container_name: incident-manager
+    image: incident-manager:dev
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - backend-net
+      - db-net
+
+  postgresql:
+    container_name: postgresql
+    image: postgres:latest
+    restart: on-failure
+    environment:
+      POSTGRES_USER: bsk
+      POSTGRES_PASSWORD: bsk
+      POSTGRES_DB: incident-manager
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+    networks:
+      - db-net
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    restart: on-failure
+    environment:
+      PGADMIN_DEFAULT_EMAIL: bsk@bsk.pl
+      PGADMIN_DEFAULT_PASSWORD: bsk
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    networks:
+      - db-net
+
+  certbot:
+    container_name: certbot
+    image: certbot/dns-cloudflare
+    restart: on-failure
+    volumes:
+      - ./certbot/certs/letsencrypt:/etc/letsencrypt/live
+      - ./certbot/cloudflare.ini:/opt/certbot/cloudflare.ini
+      - certbot:/var/lib/letsencrypt
+    command: certonly --non-interactive --agree-tos --dns-cloudflare --dns-cloudflare-credentials cloudflare.ini -d bskprojekt.kacperklimas.com -d *.bskprojekt.kacperklimas.com
+
+volumes:
+  postgresql:
+  pgadmin:
+  certbot:
+
+networks:
+  backend-net:
+  db-net:
