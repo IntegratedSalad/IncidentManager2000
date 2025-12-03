@@ -21,6 +21,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/incident-manager
+      SPRING_DATASOURCE_USERNAME: bsk
+      SPRING_DATASOURCE_PASSWORD: bsk
+      SERVER_PORT: 8080
     networks:
       - backend-net
       - db-net

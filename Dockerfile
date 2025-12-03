@@ -11,7 +11,8 @@ FROM eclipse-temurin:25-jre-ubi10-minimal
 WORKDIR /app
 
 RUN microdnf -y update && microdnf -y install curl && \
-    useradd --user-group --no-create-home app && \
+    groupadd -g 1001 app && \
+    useradd --no-create-home -u 1001 -g 1001 app && \
     chown -R app:app /app
 
 COPY --from=appbuilder build/target/*.jar app.jar
