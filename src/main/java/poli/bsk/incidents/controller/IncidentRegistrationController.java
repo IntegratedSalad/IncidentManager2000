@@ -20,10 +20,9 @@ public class IncidentRegistrationController {
     public ResponseEntity<Incident> registerIncident(@RequestParam String reportedBy,
                                                     @RequestParam String title,
                                                     @RequestParam String description,
-                                                    @RequestParam String category,
-                                                    @RequestParam String priority) {
+                                                    @RequestParam String category) {
         Incident incident = incidentRegistrationService.registerIncident(
-            reportedBy, title, description, category, priority
+            reportedBy, title, description, category
         );
         return new ResponseEntity<>(incident, HttpStatus.CREATED);
     }

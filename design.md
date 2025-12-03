@@ -64,6 +64,10 @@ Allows IT Employee
 
 ## DB Design
 
+Start locally:
+initdb --locale=en_US.UTF-8 -D /opt/homebrew/var/postgres
+psql postgres
+
 ## Roles
 ### Admin (admin of the application)
 * Can add/remove users

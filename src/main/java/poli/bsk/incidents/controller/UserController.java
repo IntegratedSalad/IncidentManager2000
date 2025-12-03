@@ -16,14 +16,4 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
-    // Example endpoint to get current authenticated user info via OAuth2
-    @GetMapping("/me")
-    public String getCurrentUser(@AuthenticationPrincipal OidcUser oidcUser) {
-        if (oidcUser == null) {
-            return "No authenticated user.";
-        }
-        // You can extract more info from oidcUser as needed
-        return "Authenticated user: " + oidcUser.getEmail();
-    }
 }

@@ -1,0 +1,10 @@
+2025-12-03 22:52:11.195 CET [36527] LOG:  starting PostgreSQL 14.20 (Homebrew) on aarch64-apple-darwin21.4.0, compiled by Apple clang version 13.1.6 (clang-1316.0.21.2.5), 64-bit
+2025-12-03 22:52:11.197 CET [36527] LOG:  listening on IPv6 address "::1", port 5432
+2025-12-03 22:52:11.197 CET [36527] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-12-03 22:52:11.198 CET [36527] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2025-12-03 22:52:11.201 CET [36528] LOG:  database system was shut down at 2025-12-03 22:51:43 CET
+2025-12-03 22:52:11.206 CET [36527] LOG:  database system is ready to accept connections
+2025-12-03 22:59:26.106 CET [37640] FATAL:  role "userdebil" does not exist
+2025-12-03 22:59:27.769 CET [37646] FATAL:  role "userdebil" does not exist
+2025-12-03 23:01:14.843 CET [38278] FATAL:  role "userdebil" does not exist
+2025-12-03 23:01:16.386 CET [38284] FATAL:  role "userdebil" does not exist

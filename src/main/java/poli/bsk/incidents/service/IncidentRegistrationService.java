@@ -18,15 +18,14 @@ public class IncidentRegistrationService {
     public Incident registerIncident(String reportedBy,
                                      String title,
                                      String description,
-                                     String category,
-                                     String priority) {
+                                     String category) {
         Incident incident = new Incident(
             title,
             description,
             reportedBy,
             Instant.now(),    // reportedAt
             "OPEN",   // status
-            priority,
+            "none",
             category,
             null, // assignedTo
             null, // resolution
