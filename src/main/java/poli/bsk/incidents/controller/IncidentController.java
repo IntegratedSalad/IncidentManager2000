@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/incidents")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class IncidentController {
     private final IncidentService incidentService;
 

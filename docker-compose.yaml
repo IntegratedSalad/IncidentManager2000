@@ -14,6 +14,16 @@ services:
       - backend-net
       - gui-net
 
+  incident-manager-frontend:
+    container_name: incident-manager-frontend
+    image: incident-manager-frontend:dev
+    restart: on-failure
+    build:
+      context: incident_manager2000
+      dockerfile: Dockerfile
+    networks:
+      - backend-net
+
   incident-manager:
     container_name: incident-manager
     image: incident-manager:dev
