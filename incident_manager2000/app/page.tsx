@@ -1,64 +1,110 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import IncidentList from '@/components/IncidentList';
+import IncidentForm from '@/components/IncidentForm';
+import Navigation from '@/components/Navigation';
+import { incidentAPI } from '@/lib/api';
+import { Incident } from '@/lib/types';
 
 export default function Home() {
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'all' | 'open' | 'resolved'>('all');
+
+  useEffect(() => {
+    loadIncidents();
+  }, [filter]);
+
+  const loadIncidents = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      let data: Incident[];
+      if (filter === 'all') {
+        data = await incidentAPI.getAll();
+      } else {
+        const status = filter === 'open' ? 'OPEN' : 'RESOLVED';
+        data = await incidentAPI.getByStatus(status);
+      }
+      setIncidents(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load incidents');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateIncident = async (data: Incident) => {
+    try {
+      await incidentAPI.create(data);
+      setShowForm(false);
+      loadIncidents();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create incident');
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Navigation />
+      
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Incident Manager
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Manage and track security incidents
+            </p>
+          </div>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {showForm ? 'Cancel' : 'New Incident'}
+          </button>
         </div>
+
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+
+        {showForm && (
+          <div className="mb-8">
+            <IncidentForm onSubmit={handleCreateIncident} />
+          </div>
+        )}
+
+        <div className="mb-6 flex gap-2">
+          {(['all', 'open', 'resolved'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-2 rounded-lg font-medium transition ${
+                filter === f
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p className="text-gray-600 dark:text-gray-400 mt-4">Loading incidents...</p>
+          </div>
+        ) : (
+          <IncidentList incidents={incidents} onRefresh={loadIncidents} />
+        )}
       </main>
     </div>
   );
