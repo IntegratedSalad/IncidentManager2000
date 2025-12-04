@@ -28,6 +28,9 @@ public class Incident {
     @ElementCollection
     private List<String> attachments;
 
+    public Incident() {
+    }
+
     public Incident(String title,
                     String description,
                     String reportedBy,
