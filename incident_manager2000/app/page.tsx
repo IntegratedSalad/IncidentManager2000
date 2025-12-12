@@ -1,22 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import IncidentList from '@/components/IncidentList';
 import IncidentForm from '@/components/IncidentForm';
 import Navigation from '@/components/Navigation';
 import { incidentAPI } from '@/lib/api';
 import { Incident } from '@/lib/types';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'open' | 'resolved'>('all');
+  
 
   useEffect(() => {
-    loadIncidents();
-  }, [filter]);
+    if (!isLoading) {
+      loadIncidents();
+    }
+  }, [filter, isLoading]);
 
   const loadIncidents = async () => {
     setLoading(true);
@@ -46,6 +53,19 @@ export default function Home() {
       setError(err instanceof Error ? err.message : 'Failed to create incident');
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    router.push('/login');
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

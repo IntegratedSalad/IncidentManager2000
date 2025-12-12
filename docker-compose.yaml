@@ -21,8 +21,16 @@ services:
     build:
       context: incident_manager2000
       dockerfile: Dockerfile
+    environment:
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: my-id
+      MICROSOFT_ID: my-id
+      MICROSOFT_SECRET: my-id
+      NEXT_PUBLIC_API_URL: http://localhost:8082/api
     networks:
       - backend-net
+    ports:
+      - "3000:3000"
 
   incident-manager:
     container_name: incident-manager
@@ -39,6 +47,8 @@ services:
     networks:
       - backend-net
       - db-net
+    ports:
+      - "8082:8080"
 
   postgresql:
     container_name: postgresql
