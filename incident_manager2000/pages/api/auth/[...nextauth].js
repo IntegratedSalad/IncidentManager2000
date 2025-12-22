@@ -8,7 +8,11 @@ export const authOptions = {
       name: "Microsoft",
       type: "oauth",
       wellKnown: "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
-      authorization: { params: { scope: "openid profile email" } },
+      authorization: { 
+        params: { 
+          scope: "openid profile email user.read",
+        } 
+      },
       idToken: true,
       checks: ["state", "pkce"],
       clientId: process.env.MICROSOFT_ID,
@@ -24,8 +28,13 @@ export const authOptions = {
       },
     },
   ],
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async jwt({ token, account, profile }) {
+      // Przechowywanie tokenu dostępu w JWT
       if (account) {
         token.accessToken = account.access_token
         token.refreshToken = account.refresh_token
@@ -37,16 +46,16 @@ export const authOptions = {
       return token
     },
     async session({ session, token }) {
+      // Przekazanie tokenu do sesji (będzie dostępny na frontendzie)
       if (session.user) {
         session.user.name = token.name
         session.user.email = token.email
       }
       session.accessToken = token.accessToken
+      session.refreshToken = token.refreshToken
       return session
     },
     async redirect({ url, baseUrl }) {
-      // Redirect to home page on successful login
-      // url is the callbackUrl or a relative/absolute URL to redirect to
       if (url.startsWith("/")) return url
       else if (new URL(url).origin === baseUrl) return url
       return baseUrl
@@ -57,7 +66,6 @@ export const authOptions = {
     signOut: "/",
     error: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET,
 }
 
 export default NextAuth(authOptions)

@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import IncidentList from '@/components/IncidentList';
 import IncidentForm from '@/components/IncidentForm';
 import Navigation from '@/components/Navigation';
-import { incidentAPI } from '@/lib/api';
+import { useAuthenticatedAPI } from '@/lib/useAuthenticatedAPI';
 import { Incident } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user, accessToken } = useAuth();
+  const { incidentAPI } = useAuthenticatedAPI();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -20,10 +21,10 @@ export default function Home() {
   
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && accessToken) {
       loadIncidents();
     }
-  }, [filter, isLoading]);
+  }, [filter, isLoading, accessToken]);
 
   const loadIncidents = async () => {
     setLoading(true);

@@ -21,15 +21,12 @@ services:
     build:
       context: incident_manager2000
       dockerfile: Dockerfile
-<<<<<<< HEAD
     environment:
       NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: my-id
-      MICROSOFT_ID: my-id
-      MICROSOFT_SECRET: my-id
+      NEXTAUTH_SECRET: B2XcRcb20Eq1tSRCjyIG9rCKp+Kbtq/dkauaBZbbRxU=
+      MICROSOFT_ID: 2f84a070-ee00-4815-afbb-632d2edb9f09
+      MICROSOFT_SECRET: sGE8Q~B7PBRdWmDuyF3uqOwr4wiODGcBRadVKctF
       NEXT_PUBLIC_API_URL: http://localhost:8082/api
-=======
->>>>>>> 2df00f0 (removed secret)
     networks:
       - backend-net
     ports:

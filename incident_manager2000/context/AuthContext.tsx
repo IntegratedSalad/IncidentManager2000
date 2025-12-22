@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 
 export interface User {
@@ -14,6 +14,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  accessToken: string | null;
   login: (provider: 'microsoft') => void;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const user = session?.user ? {
     name: session.user.name || '',
@@ -32,9 +34,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAuthenticated = status === 'authenticated';
   const isLoading = status === 'loading';
 
+  // Przechowywanie tokenu dostępu w stanie aplikacji
+  useEffect(() => {
+    if (session?.accessToken) {
+      setAccessToken(session.accessToken);
+      // Opcjonalnie: przechowywanie w localStorage (z ostrożnością)
+      localStorage.setItem('accessToken', session.accessToken);
+    } else if (!session) {
+      setAccessToken(null);
+      localStorage.removeItem('accessToken');
+    }
+  }, [session]);
+
   const login = async (provider: 'microsoft') => {
     try {
-      // signIn will handle redirect automatically
       const result = await signIn(provider, { redirect: false });
       if (result?.error) {
         console.error('Login error:', result.error);
@@ -48,6 +61,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
+      setAccessToken(null);
+      localStorage.removeItem('accessToken');
       await signOut({ redirect: true, callbackUrl: '/' });
     } catch (err) {
       console.error('Logout failed:', err);
@@ -59,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, error: null, login, logout, fetchUser }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, error: null, accessToken, login, logout, fetchUser }}>
       {children}
     </AuthContext.Provider>
   );

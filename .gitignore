@@ -35,3 +35,4 @@ build/
 ### Application ###
 
 certbot/
+docker-compose.yaml

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import poli.bsk.incidents.service.IncidentService;
 import poli.bsk.incidents.dto.IncidentDTO;
 
@@ -20,12 +21,14 @@ public class IncidentController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<IncidentDTO>> getAllIncidents() {
         List<IncidentDTO> incidents = incidentService.getAllIncidents();
         return ResponseEntity.ok(incidents);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<IncidentDTO> getIncidentById(@PathVariable Long id) {
         return incidentService.getIncidentById(id)
                 .map(ResponseEntity::ok)
@@ -33,36 +36,42 @@ public class IncidentController {
     }
 
     @GetMapping("/status/{status}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<IncidentDTO>> getIncidentsByStatus(@PathVariable String status) {
         List<IncidentDTO> incidents = incidentService.getIncidentsByStatus(status);
         return ResponseEntity.ok(incidents);
     }
 
     @GetMapping("/priority/{priority}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<IncidentDTO>> getIncidentsByPriority(@PathVariable String priority) {
         List<IncidentDTO> incidents = incidentService.getIncidentsByPriority(priority);
         return ResponseEntity.ok(incidents);
     }
 
     @GetMapping("/reporter/{reportedBy}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<IncidentDTO>> getIncidentsByReporter(@PathVariable String reportedBy) {
         List<IncidentDTO> incidents = incidentService.getIncidentsByReportedBy(reportedBy);
         return ResponseEntity.ok(incidents);
     }
 
     @GetMapping("/assigned/{assignedTo}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<IncidentDTO>> getIncidentsByAssignee(@PathVariable String assignedTo) {
         List<IncidentDTO> incidents = incidentService.getIncidentsByAssignedTo(assignedTo);
         return ResponseEntity.ok(incidents);
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<IncidentDTO> createIncident(@RequestBody IncidentDTO incidentDTO) {
         IncidentDTO created = incidentService.createIncident(incidentDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<IncidentDTO> updateIncident(@PathVariable Long id, @RequestBody IncidentDTO incidentDTO) {
         IncidentDTO updated = incidentService.updateIncident(id, incidentDTO);
         if (updated != null) {
@@ -72,6 +81,7 @@ public class IncidentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteIncident(@PathVariable Long id) {
         incidentService.deleteIncident(id);
         return ResponseEntity.noContent().build();
