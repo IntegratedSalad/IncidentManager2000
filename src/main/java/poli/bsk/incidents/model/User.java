@@ -1,7 +1,6 @@
 package poli.bsk.incidents.model;
 
 import jakarta.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")

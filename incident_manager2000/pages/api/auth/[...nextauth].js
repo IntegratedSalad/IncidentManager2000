@@ -7,17 +7,16 @@ export const authOptions = {
       id: "microsoft",
       name: "Microsoft",
       type: "oauth",
-      wellKnown: "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
-      authorization: { 
-        params: { 
-          scope: "openid profile email user.read",
-        } 
+      wellKnown: `https://login.microsoftonline.com/consumers/v2.0/.well-known/openid-configuration`,
+      authorization: {
+        params: {
+          scope: "openid profile email User.Read",
+        }
       },
       idToken: true,
       checks: ["state", "pkce"],
       clientId: process.env.MICROSOFT_ID,
       clientSecret: process.env.MICROSOFT_SECRET,
-      callbackUrl: `${process.env.NEXTAUTH_URL}/api/auth/callback/microsoft`,
       profile(profile) {
         return {
           id: profile.sub,
@@ -34,10 +33,10 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, account, profile }) {
-      // Przechowywanie tokenu dostępu w JWT
       if (account) {
         token.accessToken = account.access_token
         token.refreshToken = account.refresh_token
+        token.idToken = account.id_token  // Dodaj też id_token
       }
       if (profile) {
         token.name = profile.name
@@ -46,13 +45,12 @@ export const authOptions = {
       return token
     },
     async session({ session, token }) {
-      // Przekazanie tokenu do sesji (będzie dostępny na frontendzie)
       if (session.user) {
         session.user.name = token.name
         session.user.email = token.email
       }
       session.accessToken = token.accessToken
-      session.refreshToken = token.refreshToken
+      session.idToken = token.idToken  // id_token dla Spring Backend
       return session
     },
     async redirect({ url, baseUrl }) {

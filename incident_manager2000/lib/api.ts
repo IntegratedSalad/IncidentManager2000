@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://bskprojekt.kacperklimas.com/api';
+const API_BASE_URL = process.env.BACKEND_URL || 'https://bskprojekt.kacperklimas.com/api';
 
 // Helper funkcja do wysyłania żądań z Bearer tokenem
 export const fetchWithToken = async (

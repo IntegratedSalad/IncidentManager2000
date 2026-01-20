@@ -82,5 +82,4 @@ public class Incident {
     public List<String> getComments() { return comments; }
     public void setComments(List<String> comments) { this.comments = comments; }
     public List<String> getAttachments() { return attachments; }
-    public void setAttachments(List<String> attachments) { this.attachments = attachments; }
 }
