@@ -28,12 +28,11 @@ public class AuthController {
     @GetMapping("/user")
     public ResponseEntity<Map<String, Object>> getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).build();
         }
 
-        // Jeśli to JWT token (OAuth2 ResourceServer)
         if (authentication.getPrincipal() instanceof Jwt) {
             Jwt jwt = (Jwt) authentication.getPrincipal();
             Map<String, Object> response = new HashMap<>();
@@ -44,7 +43,6 @@ public class AuthController {
             return ResponseEntity.ok(response);
         }
 
-        // Fallback
         Map<String, Object> response = new HashMap<>();
         response.put("name", authentication.getName());
         response.put("roles", authentication.getAuthorities());
@@ -54,13 +52,13 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).build();
         }
 
         Map<String, Object> response = new HashMap<>();
-        
+
         if (authentication.getPrincipal() instanceof Jwt) {
             Jwt jwt = (Jwt) authentication.getPrincipal();
             response.put("email", jwtTokenUtil.extractEmail(jwt));
@@ -71,7 +69,7 @@ public class AuthController {
             response.put("principal", authentication.getName());
             response.put("authenticated", authentication.isAuthenticated());
         }
-        
+
         return ResponseEntity.ok(response);
     }
 
@@ -81,10 +79,10 @@ public class AuthController {
         if (session != null) {
             session.invalidate();
         }
-        
+
         SecurityContextHolder.clearContext();
         response.setHeader("Set-Cookie", "JSESSIONID=; Path=/; Max-Age=0");
-        
+
         Map<String, String> responseMap = new HashMap<>();
         responseMap.put("message", "Logged out successfully");
         return ResponseEntity.ok(responseMap);

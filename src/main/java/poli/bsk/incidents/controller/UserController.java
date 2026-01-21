@@ -53,7 +53,6 @@ public class UserController {
     @PostMapping("/sync")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDTO> syncUser(@RequestBody UserDTO userDTO) {
-        // Sync creates or updates user based on email
         UserDTO synced = userService.syncUser(userDTO);
         return ResponseEntity.ok(synced);
     }

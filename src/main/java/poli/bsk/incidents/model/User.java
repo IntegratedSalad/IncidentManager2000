@@ -14,7 +14,7 @@ public class User {
     private String email;
 
     private String name;
-    private String role; // e.g., ADMIN, EMPLOYEE, IT_EMPLOYEE
+    private String role;
 
     public User() {
     }
@@ -24,8 +24,6 @@ public class User {
         this.name = name;
         this.role = role;
     }
-
-    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getEmail() { return email; }

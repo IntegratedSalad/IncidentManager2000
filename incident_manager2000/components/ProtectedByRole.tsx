@@ -4,9 +4,6 @@ import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import * as AuthUtils from '@/lib/auth';
 
-/**
- * Component that renders children only if user has the required role(s)
- */
 interface ProtectedProps {
   children: React.ReactNode;
   requiredRoles?: string[];
@@ -14,14 +11,6 @@ interface ProtectedProps {
   fallback?: React.ReactNode;
 }
 
-/**
- * ProtectedByRole component - shows content only if user has required role
- * 
- * @param requiredRoles - Array of role names. If not provided, requires any authentication
- * @param requireAll - If true, user must have ALL roles. If false (default), ANY role is sufficient
- * @param fallback - Component to show if user doesn't have required role
- * @param children - Content to show if user has required role
- */
 export const ProtectedByRole: React.FC<ProtectedProps> = ({
   children,
   requiredRoles = [],
@@ -54,9 +43,6 @@ export const ProtectedByRole: React.FC<ProtectedProps> = ({
   return <>{children}</>;
 };
 
-/**
- * Component that conditionally renders based on user role
- */
 interface ConditionalRenderProps {
   children: React.ReactNode;
   admin?: React.ReactNode;
@@ -64,9 +50,6 @@ interface ConditionalRenderProps {
   fallback?: React.ReactNode;
 }
 
-/**
- * RoleBasedRender - conditionally render different content based on user role
- */
 export const RoleBasedRender: React.FC<ConditionalRenderProps> = ({
   children,
   admin = null,
@@ -94,9 +77,6 @@ export const RoleBasedRender: React.FC<ConditionalRenderProps> = ({
   return <>{children}</>;
 };
 
-/**
- * Hook to check if user can perform a specific action
- */
 export const useAuthorization = () => {
   const { roles } = useAuth();
 
@@ -112,9 +92,6 @@ export const useAuthorization = () => {
   };
 };
 
-/**
- * Component that shows a protected button
- */
 interface ProtectedButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   requiredRoles?: string[];

@@ -11,8 +11,3 @@ public class IncidentsApplication {
 	}
 
 }
-
-// Controllers => Objects that concern HTTP requests
-// Services => Business logic
-// Repositories => Data access layer
-// OAuth2 => Security and authentication

@@ -1,10 +1,6 @@
 import { useAuth } from '@/context/AuthContext';
 import { incidentAPI, userAPI, fetchWithToken } from './api';
 
-/**
- * Hook do automatycznego dołączania Bearer tokenu do żądań API
- * Upraszcza wywoływanie funkcji API bez konieczności ręcznego przekazywania tokenu
- */
 export const useAuthenticatedAPI = () => {
   const { accessToken } = useAuth();
 
@@ -35,7 +31,6 @@ export const useAuthenticatedAPI = () => {
       update: (id: number, data: any) => userAPI.update(id, data, accessToken || undefined),
       delete: (id: number) => userAPI.delete(id, accessToken || undefined),
     },
-    // Bezpośredni dostęp do funkcji fetchWithToken dla niestandardowych żądań
     fetchWithToken: (url: string, options?: RequestInit) =>
       fetchWithToken(url, { ...options, token: accessToken || undefined }),
   };

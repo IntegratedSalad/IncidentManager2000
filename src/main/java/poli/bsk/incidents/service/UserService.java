@@ -60,28 +60,24 @@ public class UserService {
     }
 
     public UserDTO syncUser(UserDTO userDTO) {
-        // Create or update user based on email
         Optional<User> existing = userRepository.findByEmail(userDTO.getEmail());
         User user;
-        
+
         if (existing.isPresent()) {
-            // User exists, update name and role from DTO
             user = existing.get();
             if (userDTO.getName() != null) {
                 user.setName(userDTO.getName());
             }
-            // Always update role from DTO (client-provided role takes precedence)
             if (userDTO.getRole() != null && !userDTO.getRole().isEmpty()) {
                 user.setRole(userDTO.getRole());
                 System.out.println("[UserService.syncUser] ✓ Updated user " + userDTO.getEmail() + " role to: " + userDTO.getRole());
             }
         } else {
-            // Create new user with role from DTO
             String role = (userDTO.getRole() != null && !userDTO.getRole().isEmpty()) ? userDTO.getRole() : "User";
             user = new User(userDTO.getEmail(), userDTO.getName(), role);
             System.out.println("[UserService.syncUser] ✓ Created user " + userDTO.getEmail() + " with role: " + role);
         }
-        
+
         User saved = userRepository.save(user);
         System.out.println("[UserService.syncUser] ✓ Saved user to DB: " + saved.getEmail() + " with role: " + saved.getRole());
         return convertToDTO(saved);

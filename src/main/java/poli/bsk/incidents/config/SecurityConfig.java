@@ -46,12 +46,10 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Publiczne endpointy
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/health/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/login", "/logout").permitAll()
-                // Chronione endpointy - wymagają autentykacji
                 .requestMatchers("/**").authenticated()
                 .anyRequest().authenticated()
             )

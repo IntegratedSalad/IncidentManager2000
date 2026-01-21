@@ -1,6 +1,5 @@
 const API_BASE_URL = process.env.BACKEND_URL || 'http://localhost:8082/api';
 
-// Helper funkcja do wysyłania żądań z Bearer tokenem
 export const fetchWithToken = async (
   url: string,
   options: RequestInit & { token?: string } = {}
@@ -22,12 +21,12 @@ export const fetchWithToken = async (
 
   console.log('[API] Fetching:', url, 'Method:', options.method || 'GET');
   console.log('[API] Headers:', Object.keys(headers));
-  
+
   const response = await fetch(url, {
     ...fetchOptions,
     headers,
   });
-  
+
   console.log('[API] Response status:', response.status);
   if (response.status === 401) {
     console.error('[API] ⚠ 401 UNAUTHORIZED - Token may be invalid or expired');
@@ -36,7 +35,6 @@ export const fetchWithToken = async (
   return response;
 };
 
-// Incident API calls
 export const incidentAPI = {
   async getAll(token?: string) {
     const url = `${API_BASE_URL}/incidents`;
@@ -124,7 +122,6 @@ export const incidentAPI = {
   },
 };
 
-// User API calls
 export const userAPI = {
   async getAll(token?: string) {
     const response = await fetchWithToken(`${API_BASE_URL}/users`, { token });

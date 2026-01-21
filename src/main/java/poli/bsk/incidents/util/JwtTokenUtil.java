@@ -10,23 +10,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Utility do pracy z JWT tokenem z Microsoft Azure AD
- */
 @Component
 public class JwtTokenUtil {
 
-    /**
-     * Pobiera role (authorities) z JWT tokenu
-     * Microsoft Azure AD może zwracać role w polach:
-     * - "roles" (array of strings)
-     * - "scp" (scope - string)
-     * - "appid" (application id)
-     */
     public Set<String> extractRoles(Jwt jwt) {
         Set<String> roles = new HashSet<>();
 
-        // Microsoft Azure AD zwraca role w "roles" claim
         if (jwt.hasClaim("roles")) {
             try {
                 List<String> jwtRoles = jwt.getClaimAsStringList("roles");
@@ -34,11 +23,9 @@ public class JwtTokenUtil {
                     roles.addAll(jwtRoles);
                 }
             } catch (Exception e) {
-                // Ignoruj jeśli claim nie jest array
             }
         }
 
-        // Alternatywnie: scope (Space-delimited string)
         if (jwt.hasClaim("scp")) {
             try {
                 String scope = jwt.getClaimAsString("scp");
@@ -51,11 +38,9 @@ public class JwtTokenUtil {
                     }
                 }
             } catch (Exception e) {
-                // Ignoruj
             }
         }
 
-        // Jeśli nie ma ról, zwróć domyślną rolę
         if (roles.isEmpty()) {
             roles.add("ROLE_USER");
         }
@@ -63,9 +48,6 @@ public class JwtTokenUtil {
         return roles;
     }
 
-    /**
-     * Pobiera email użytkownika z JWT
-     */
     public String extractEmail(Jwt jwt) {
         if (jwt.hasClaim("email")) {
             return jwt.getClaimAsString("email");
@@ -76,9 +58,6 @@ public class JwtTokenUtil {
         return jwt.getClaimAsString("sub");
     }
 
-    /**
-     * Pobiera pełną nazwę użytkownika
-     */
     public String extractName(Jwt jwt) {
         if (jwt.hasClaim("name")) {
             return jwt.getClaimAsString("name");
@@ -91,18 +70,12 @@ public class JwtTokenUtil {
         return jwt.getClaimAsString("preferred_username");
     }
 
-    /**
-     * Sprawdza czy użytkownik ma określoną rolę
-     */
     public boolean hasRole(Authentication authentication, String role) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         return authorities.stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_" + role.toUpperCase()));
     }
 
-    /**
-     * Pobiera głównego (principal) z JWT
-     */
     public String getPrincipal(Jwt jwt) {
         return extractEmail(jwt);
     }
