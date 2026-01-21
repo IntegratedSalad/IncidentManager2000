@@ -9,8 +9,6 @@ services:
       dockerfile: Dockerfile
     environment:
       NEXTAUTH_SECRET: B2XcRcb20Eq1tSRCjyIG9rCKp+Kbtq/dkauaBZbbRxU=
-      MICROSOFT_ID: 
-      MICROSOFT_SECRET:
       BACKEND_URL : http://localhost:8080/api
     networks:
       - backend-net

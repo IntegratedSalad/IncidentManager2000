@@ -21,12 +21,14 @@ public class IncidentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('Ticket.Resolve')")
     public ResponseEntity<List<IncidentDTO>> getAllIncidents() {
         List<IncidentDTO> incidents = incidentService.getAllIncidents();
         return ResponseEntity.ok(incidents);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('Ticket.Resolve')")
     public ResponseEntity<IncidentDTO> getIncidentById(@PathVariable Long id) {
         return incidentService.getIncidentById(id)
                 .map(ResponseEntity::ok)
@@ -34,12 +36,14 @@ public class IncidentController {
     }
 
     @GetMapping("/status/{status}")
+    @PreAuthorize("hasRole('Ticket.Resolve')")
     public ResponseEntity<List<IncidentDTO>> getIncidentsByStatus(@PathVariable String status) {
         List<IncidentDTO> incidents = incidentService.getIncidentsByStatus(status);
         return ResponseEntity.ok(incidents);
     }
 
     @GetMapping("/priority/{priority}")
+    @PreAuthorize("hasRole('Ticket.Resolve')")
     public ResponseEntity<List<IncidentDTO>> getIncidentsByPriority(@PathVariable String priority) {
         List<IncidentDTO> incidents = incidentService.getIncidentsByPriority(priority);
         return ResponseEntity.ok(incidents);
@@ -58,12 +62,14 @@ public class IncidentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('Ticket.Resolve', 'Ticket.Open')")
     public ResponseEntity<IncidentDTO> createIncident(@RequestBody IncidentDTO incidentDTO) {
         IncidentDTO created = incidentService.createIncident(incidentDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Ticket.Resolve')")
     public ResponseEntity<IncidentDTO> updateIncident(@PathVariable Long id, @RequestBody IncidentDTO incidentDTO) {
         IncidentDTO updated = incidentService.updateIncident(id, incidentDTO);
         if (updated != null) {
@@ -73,6 +79,7 @@ public class IncidentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Ticket.Resolve')")
     public ResponseEntity<Void> deleteIncident(@PathVariable Long id) {
         incidentService.deleteIncident(id);
         return ResponseEntity.noContent().build();

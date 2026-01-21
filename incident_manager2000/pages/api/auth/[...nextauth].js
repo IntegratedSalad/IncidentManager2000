@@ -7,10 +7,10 @@ export const authOptions = {
       id: "microsoft",
       name: "Microsoft",
       type: "oauth",
-      wellKnown: `https://login.microsoftonline.com/consumers/v2.0/.well-known/openid-configuration`,
+      wellKnown: `https://login.microsoftonline.com/organizations/v2.0/.well-known/openid-configuration`,
       authorization: {
         params: {
-          scope: "openid profile email User.Read",
+          scope: "openid profile email api://2f84a070-ee00-4815-afbb-632d2edb9f09/Incidents.Read",
         }
       },
       idToken: true,
