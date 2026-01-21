@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://bskprojekt.kacperklimas.com/api';
+const API_BASE_URL = process.env.BACKEND_URL || 'http://localhost:8082/api';
 
 // Helper funkcja do wysyłania żądań z Bearer tokenem
 export const fetchWithToken = async (
@@ -12,21 +12,45 @@ export const fetchWithToken = async (
   } as Record<string, string>;
 
   if (token) {
+    console.log('[API] ✓ Token available, length:', token.length);
+    console.log('[API] ✓ Token preview:', token.substring(0, 50) + '...');
     headers['Authorization'] = `Bearer ${token}`;
+    console.log('[API] ✓ Authorization header set');
+  } else {
+    console.warn('[API] ⚠ NO TOKEN PROVIDED - REQUEST WILL FAIL WITH 401');
   }
 
-  return fetch(url, {
+  console.log('[API] Fetching:', url, 'Method:', options.method || 'GET');
+  console.log('[API] Headers:', Object.keys(headers));
+  
+  const response = await fetch(url, {
     ...fetchOptions,
     headers,
   });
+  
+  console.log('[API] Response status:', response.status);
+  if (response.status === 401) {
+    console.error('[API] ⚠ 401 UNAUTHORIZED - Token may be invalid or expired');
+  }
+  
+  return response;
 };
 
 // Incident API calls
 export const incidentAPI = {
   async getAll(token?: string) {
-    const response = await fetchWithToken(`${API_BASE_URL}/incidents`, { token });
-    if (!response.ok) throw new Error('Failed to fetch incidents');
-    return response.json();
+    const url = `${API_BASE_URL}/incidents`;
+    console.log('[incidentAPI.getAll] Calling', url, 'with token:', token ? token.substring(0, 20) + '...' : 'none');
+    const response = await fetchWithToken(url, { token });
+    console.log('[incidentAPI.getAll] Response status:', response.status);
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('[incidentAPI.getAll] Error response:', text);
+      throw new Error('Failed to fetch incidents: ' + response.status);
+    }
+    const data = await response.json();
+    console.log('[incidentAPI.getAll] Success, got', data.length || 0, 'incidents');
+    return data;
   },
 
   async getById(id: number, token?: string) {
@@ -36,8 +60,15 @@ export const incidentAPI = {
   },
 
   async getByStatus(status: string, token?: string) {
-    const response = await fetchWithToken(`${API_BASE_URL}/incidents/status/${status}`, { token });
-    if (!response.ok) throw new Error('Failed to fetch incidents by status');
+    const url = `${API_BASE_URL}/incidents/status/${status}`;
+    console.log('[incidentAPI.getByStatus] Calling', url, 'status:', status);
+    const response = await fetchWithToken(url, { token });
+    console.log('[incidentAPI.getByStatus] Response status:', response.status);
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('[incidentAPI.getByStatus] Error response:', text);
+      throw new Error('Failed to fetch incidents by status');
+    }
     return response.json();
   },
 
@@ -85,6 +116,10 @@ export const incidentAPI = {
       token,
     });
     if (!response.ok) throw new Error('Failed to delete incident');
+    // 204 No Content returns empty body, don't try to parse as JSON
+    if (response.status === 204) {
+      return null;
+    }
     return response.json();
   },
 };
@@ -141,6 +176,10 @@ export const userAPI = {
       token,
     });
     if (!response.ok) throw new Error('Failed to delete user');
+    // 204 No Content returns empty body, don't try to parse as JSON
+    if (response.status === 204) {
+      return null;
+    }
     return response.json();
   },
 };

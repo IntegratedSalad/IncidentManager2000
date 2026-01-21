@@ -1,7 +1,8 @@
 'use client';
 
 import { Incident } from '@/lib/types';
-import { incidentAPI } from '@/lib/api';
+import { useAuthenticatedAPI } from '@/lib/useAuthenticatedAPI';
+import { useAuthorization } from '@/components/ProtectedByRole';
 import { useState } from 'react';
 
 interface IncidentCardProps {
@@ -11,6 +12,8 @@ interface IncidentCardProps {
 
 export default function IncidentCard({ incident, onRefresh }: IncidentCardProps) {
   const [updating, setUpdating] = useState(false);
+  const { canDeleteIncidents } = useAuthorization();
+  const { incidentAPI } = useAuthenticatedAPI();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -126,13 +129,15 @@ export default function IncidentCard({ incident, onRefresh }: IncidentCardProps)
           <option value="CLOSED">Closed</option>
         </select>
 
-        <button
-          onClick={handleDelete}
-          disabled={updating}
-          className="px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white text-sm rounded transition"
-        >
-          Delete
-        </button>
+        {canDeleteIncidents && (
+          <button
+            onClick={handleDelete}
+            disabled={updating}
+            className="px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white text-sm rounded transition"
+          >
+            Delete
+          </button>
+        )}
       </div>
     </div>
   );

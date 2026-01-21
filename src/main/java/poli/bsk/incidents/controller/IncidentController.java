@@ -71,7 +71,7 @@ public class IncidentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<IncidentDTO> updateIncident(@PathVariable Long id, @RequestBody IncidentDTO incidentDTO) {
         IncidentDTO updated = incidentService.updateIncident(id, incidentDTO);
         if (updated != null) {

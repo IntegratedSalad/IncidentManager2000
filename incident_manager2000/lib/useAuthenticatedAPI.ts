@@ -8,6 +8,12 @@ import { incidentAPI, userAPI, fetchWithToken } from './api';
 export const useAuthenticatedAPI = () => {
   const { accessToken } = useAuth();
 
+  if (!accessToken) {
+    console.warn('[useAuthenticatedAPI] ⚠ NO ACCESS TOKEN AVAILABLE!');
+  } else {
+    console.log('[useAuthenticatedAPI] ✓ Access token available, length:', accessToken.length);
+  }
+
   return {
     incidentAPI: {
       getAll: () => incidentAPI.getAll(accessToken || undefined),

@@ -1,19 +1,5 @@
 services:
 
-  nginx:
-    container_name: nginx
-    image: nginx
-    restart: on-failure
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - certbot-etc:/etc/nginx/certs
-    networks:
-      - backend-net
-      - gui-net
-
   incident-manager-frontend:
     container_name: incident-manager-frontend
     image: incident-manager-frontend:dev
@@ -22,11 +8,10 @@ services:
       context: incident_manager2000
       dockerfile: Dockerfile
     environment:
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      MICROSOFT_ID: ${MICROSOFT_ID}
-      MICROSOFT_SECRET: ${MICROSOFT_SECRET}
-      NEXT_PUBLIC_API_URL: http://localhost:8082/api
+      NEXTAUTH_SECRET: B2XcRcb20Eq1tSRCjyIG9rCKp+Kbtq/dkauaBZbbRxU=
+      MICROSOFT_ID: 2f84a070-ee00-4815-afbb-632d2edb9f09
+      MICROSOFT_SECRET: vJJ8Q~955jXcXY1eeJXyBS0QVRbcFfzKNtnT7drN
+      BACKEND_URL : http://localhost:8082/api
     networks:
       - backend-net
     ports:
@@ -43,12 +28,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/incident-manager
       SPRING_DATASOURCE_USERNAME: bsk
       SPRING_DATASOURCE_PASSWORD: bsk
-      SERVER_PORT: 8080
+      SERVER_PORT: 8082
     networks:
       - backend-net
       - db-net
     ports:
-      - "8082:8080"
+      - "8082:8082"
 
   postgresql:
     container_name: postgresql
@@ -76,36 +61,9 @@ services:
       - db-net
       - gui-net
 
-  keycloak:
-    container_name: keycloak
-    image: quay.io/keycloak/keycloak:26.4.7
-    restart: on-failure
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: bsk
-      KC_BOOTSTRAP_ADMIN_PASSWORD: bsk
-      KC_HOSTNAME: https://bskprojekt.kacperklimas.com/keycloak/
-      KC_PROXY_HEADERS: xforwarded
-      KC_HTTP_ENABLED: true
-    command: start
-    networks:
-      - backend-net
-      - db-net
-
-  certbot:
-    container_name: certbot
-    image: certbot/dns-cloudflare
-    restart: on-failure
-    volumes:
-      - ./certbot/cloudflare.ini:/opt/certbot/cloudflare.ini
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-    command: certonly --non-interactive --agree-tos --dns-cloudflare --dns-cloudflare-credentials cloudflare.ini -d *.bskprojekt.kacperklimas.com -d bskprojekt.kacperklimas.com
-
 volumes:
   postgresql:
   pgadmin:
-  certbot-etc:
-  certbot-var:
 
 networks:
   backend-net:

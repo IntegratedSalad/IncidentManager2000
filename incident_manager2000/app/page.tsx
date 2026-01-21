@@ -21,7 +21,9 @@ export default function Home() {
   
 
   useEffect(() => {
+    console.log('[page] useEffect triggered:', { isLoading, accessToken: accessToken ? accessToken.substring(0, 20) + '...' : 'null' });
     if (!isLoading && accessToken) {
+      console.log('[page] Calling loadIncidents');
       loadIncidents();
     }
   }, [filter, isLoading, accessToken]);
@@ -30,15 +32,20 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
+      console.log('[loadIncidents] Starting with accessToken:', accessToken ? accessToken.substring(0, 20) + '...' : 'none');
       let data: Incident[];
       if (filter === 'all') {
+        console.log('[loadIncidents] Calling getAll()');
         data = await incidentAPI.getAll();
       } else {
         const status = filter === 'open' ? 'OPEN' : 'RESOLVED';
+        console.log('[loadIncidents] Calling getByStatus:', status);
         data = await incidentAPI.getByStatus(status);
       }
+      console.log('[loadIncidents] Got data:', data);
       setIncidents(data);
     } catch (err) {
+      console.error('[loadIncidents] Error:', err);
       setError(err instanceof Error ? err.message : 'Failed to load incidents');
     } finally {
       setLoading(false);
@@ -73,6 +80,10 @@ export default function Home() {
       <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+          <p className="text-sm text-yellow-700">Debug: Token exists: {accessToken ? 'YES' : 'NO'} | Loading: {loading.toString()} | Filter: {filter}</p>
+        </div>
+        
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">

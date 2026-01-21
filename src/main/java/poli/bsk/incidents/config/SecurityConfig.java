@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import poli.bsk.incidents.util.JwtTokenUtil;
+import poli.bsk.incidents.repository.UserRepository;
 
 import java.util.Arrays;
 
@@ -39,7 +40,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtTokenUtil jwtTokenUtil) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtTokenUtil jwtTokenUtil, UserRepository userRepository) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -57,7 +58,7 @@ public class SecurityConfig {
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt
                     .decoder(jwtDecoder())
-                    .jwtAuthenticationConverter(new JwtAuthenticationConverter(jwtTokenUtil))
+                    .jwtAuthenticationConverter(new JwtAuthenticationConverter(jwtTokenUtil, userRepository))
                 )
             )
             .httpBasic(basic -> {});

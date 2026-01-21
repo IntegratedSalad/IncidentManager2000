@@ -50,8 +50,15 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @PostMapping("/sync")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserDTO> syncUser(@RequestBody UserDTO userDTO) {
+        // Sync creates or updates user based on email
+        UserDTO synced = userService.syncUser(userDTO);
+        return ResponseEntity.ok(synced);
+    }
+
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         UserDTO created = userService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
